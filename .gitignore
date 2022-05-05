@@ -1,14 +1,2 @@
-Waveform1.vwf
-Waveform2.vwf
-Waveform3.vwf
-Waveform4.vwf
-Waveform5.vwf
-Waveform6.vwf
-Waveform7.vwf
-Waveform8.vwf
-Waveform9.vwf
-Waveform10.vwf
-Waveform11.vwf
-Waveform12.vwf
-Waveform13.vwf
-Waveform14.vwf
+*.vwf
+*.vhd.bak
