@@ -1,0 +1,20 @@
+
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+USE ieee.numeric_std.all;
+
+ENTITY MUX4to1 IS
+	PORT(
+		X : IN std_logic_vector (3 downto 0);
+		C : IN std_logic_vector (1 downto 0);
+		MOUT : OUT std_logic
+		);
+END MUX4to1;
+
+ARCHITECTURE Behavior OF MUX4to1 IS
+BEGIN
+	MOUT <= (X(0) and (C(0) nor C(1))) or (X(1) and not(C(0)) and C(1))
+		or (X(2) and C(0) and not(C(1))) or (X(3) and C(0) and C(1));
+END
+ARCHITECTURE;

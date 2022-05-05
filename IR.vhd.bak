@@ -1,0 +1,17 @@
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+USE ieee.numeric_std.all;
+
+ENTITY IR IS
+	PORT(
+		instr : in std_logic_vector (15 downto 0);
+		);
+END MUX4to1;
+
+ARCHITECTURE Behavior OF MUX4to1 IS
+BEGIN
+	z <= (i0 and (a0 nor a1)) or (i1 and not(a0) and a1)
+		or (i2 and a0 and not(a1)) or (i3 and a0 and a1);
+END
+ARCHITECTURE;

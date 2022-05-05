@@ -1,0 +1,145 @@
+
+	
+library ieee;
+use ieee.std_logic_1164.all;
+
+ENTITY ALU IS
+	PORT(
+		input_bus1 : in std_logic_vector (15 downto 0);
+		input_bus2 : in std_logic_vector (15 downto 0);
+		funct : in std_logic_vector (2 downto 0);
+		shift : in std_logic_vector (3 downto 0);
+		
+		result : out std_logic_vector (15 downto 0);
+		parity : out std_logic;
+		carry : out std_logic;
+		overflow : out std_logic;
+		zero : out std_logic;
+		sign : out std_logic
+	);
+END ENTITY;
+
+ARCHITECTURE behave OF ALU IS
+
+COMPONENT SixteenBitAdder IS
+	PORT(
+		A : IN std_logic_vector (15 downto 0);
+		B : IN std_logic_vector (15 downto 0);
+		CARRYIN : IN std_logic;
+		CARRYOUT : OUT std_logic;
+		SUM : OUT std_logic_vector (15 downto 0)
+	);
+END COMPONENT;
+
+COMPONENT SixteenBitSubtractor IS
+	PORT(
+		A : IN std_logic_vector (15 downto 0);
+		B : IN std_logic_vector (15 downto 0);
+		BORROWIN : IN std_logic;
+		BORROWOUT : OUT std_logic;
+		DIF : OUT std_logic_vector (15 downto 0)
+	);
+END COMPONENT;
+
+COMPONENT RightShifter16bit IS
+	PORT(
+		A : in std_logic_vector (15 downto 0);
+		shamt : in std_logic_vector (3 downto 0);
+		O : out std_logic_vector (15 downto 0);
+		c : out std_logic
+	);
+END COMPONENT;
+
+COMPONENT LeftShifter16bit IS
+	PORT(
+		A : in std_logic_vector (15 downto 0);
+		shamt : in std_logic_vector (3 downto 0);
+		O : out std_logic_vector (15 downto 0);
+		c : out std_logic
+	);
+END COMPONENT;
+
+COMPONENT TristateBus IS
+	PORT(
+		XIN : IN std_logic_vector (15 downto 0);
+		control : IN std_logic;
+		XOUT : IN std_logic_vector (15 downto 0)
+	);
+END COMPONENT;
+
+-- DECODER SIGNALS
+signal add : std_logic;
+signal sub : std_logic;
+signal slt : std_logic; -- set on less than
+signal andl : std_logic; -- and logical
+signal orl : std_logic; -- or logical
+signal notl : std_logic; -- not logical
+signal sl : std_logic; -- shift left
+signal sr : std_logic; -- shift right
+
+-- ADD FUNCTION SIGNALS
+signal a_add : std_logic_vector (15 downto 0);
+signal b_add : std_logic_vector (15 downto 0);
+-- SUB FUNCTION SIGNALS
+signal a_sub : std_logic_vector (15 downto 0);
+signal b_sub : std_logic_vector (15 downto 0);
+-- SLT FUNCTION SIGNALS
+signal a_slt : std_logic_vector (15 downto 0);
+signal b_slt : std_logic_vector (15 downto 0);
+-- AND FUNCTION SIGNALS
+signal a_and : std_logic_vector (15 downto 0);
+signal b_and : std_logic_vector (15 downto 0);
+-- OR FUNCTION SIGNALS
+signal a_or : std_logic_vector (15 downto 0);
+signal b_or : std_logic_vector (15 downto 0);
+-- NOT FUNCTION SIGNALS
+signal a_not : std_logic_vector (15 downto 0);
+-- LEFT SHIFT FUNCTION SIGNALS
+signal a_sll : std_logic_vector (15 downto 0);
+-- RIGHT SHIFT FUNCTION SIGNALS
+signal a_srl : std_logic_vector (15 downto 0);
+
+BEGIN
+	-- Decoder signal logic
+	add <= not(funct(2)) and not(funct(1)) and not(funct(1));
+	sub <= not(funct(2)) and not(funct(1)) and funct(0);
+	slt <= not(funct(2)) and funct(1) and not(funct(0));
+	andl <= not(funct(2)) and funct(1) and funct(0);
+	orl <= funct(2) and not(funct(1)) and not(funct(0));
+	notl <= funct(2) and not(funct(1)) and funct(0);
+	sl <= funct(2) and funct(1) and not(funct(0));
+	sr <= funct(2) and funct(1) and funct(0);
+	
+	-- Tristate buffer activater signal logic
+	tri_add_a : TristateBus PORT MAP ( XIN=>input_bus1, control=>add, XOUT=>a_add );
+	tri_add_b : TristateBus PORT MAP ( XIN=>input_bus2, control=>sub, XOUT=>b_add );
+	
+	tri_sub_a : TristateBus PORT MAP ( XIN=>input_bus1, control=>sub, XOUT=>a_sub );
+	tri_sub_b : TristateBus PORT MAP ( XIN=>input_bus2, control=>sub, XOUT=>b_sub );
+	
+	tri_slt : TristateBus PORT MAP ( XIN=>input_bus1, control=>slt, XOUT=>a_slt );
+	--tri_slt : TristateBus PORT MAP ( XIN=>input_bus2, control=>slt, XOUT=>b_slt );
+	
+	tri_and_a : TristateBus PORT MAP ( XIN=>input_bus1, control=>andl, XOUT=>a_and );
+	tri_and_b : TristateBus PORT MAP ( XIN=>input_bus2, control=>andl, XOUT=>b_and );
+	
+	tri_or_a : TristateBus PORT MAP ( XIN=>input_bus1, control=>orl, XOUT=>a_or );
+	tri_or_b : TristateBus PORT MAP ( XIN=>input_bus2, control=>orl, XOUT=>b_or );
+	
+	tri_not : TristateBus PORT MAP ( XIN=>input_bus1, control=>notl, XOUT=>a_not );
+	
+	tri_sll : TristateBus PORT MAP ( XIN=>input_bus1, control=>sl, XOUT=>a_sll );
+	tri_srr : TristateBus PORT MAP ( XIN=>input_bus1, control=>sr, XOUT=>a_srl );
+	
+	-- Arithmetic components
+	adder : SixteenBitAdder PORT MAP ( A=>a_add, B=>b_add, CARRYIN=>'0', CARRYOUT=>carry, SUM=>result );
+	subtractor : SixteenBitSubtractor PORT MAP ( A=>a_sub, B=>b_sub, BORROWIN=>'0', BORROWOUT=>carry, DIF=>result );
+	setOnLessThan : SixteenBitSubtractor PORT MAP ( A=>a_slt, B=>b_slt, BORROWIN=>'0', BORROWOUT=>open, DIF(15)=>result(0), DIF(14 downto 0)=>open );
+	
+	rshifter : RightShifter16bit PORT MAP ( A=>a_srl, shamt=>shift, O=>result, c=>carry );
+	lshifter : LeftShifter16bit PORT MAP ( A=>a_sll, shamt=>shift, O=>result, c=>carry );
+	
+	
+	
+END
+ARCHITECTURE;

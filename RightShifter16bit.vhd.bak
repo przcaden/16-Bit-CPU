@@ -1,0 +1,76 @@
+
+library ieee;
+use ieee.std_logic_1164.all;
+
+ENTITY RightShifter16bit IS
+	PORT(
+		sh : IN std_logic;
+		l : IN std_logic;
+		clock: IN std_logic;
+		si : IN std_logic;
+		ClrN : IN std_logic;
+		D : IN std_logic_vector (15 downto 0);
+		Q : OUT std_logic_vector (15 downto 0)
+	);
+END ENTITY;
+
+ARCHITECTURE behave OF RightShifter16bit IS
+
+COMPONENT MUX4to1 IS
+	PORT(
+		X : IN std_logic_vector (3 downto 0);
+		C : IN std_logic_vector (1 downto 0);
+		MOUT : OUT std_logic
+	);
+END COMPONENT;
+
+COMPONENT DFlipFlop IS
+	PORT(
+		d : in std_logic;
+		Clk : in std_logic;
+		Clr : in std_logic;
+		q2 : out std_logic
+	);
+END COMPONENT;
+
+SIGNAL qsig : std_logic_vector(15 downto 0);
+SIGNAL msig : std_logic_vector(15 downto 0);
+
+BEGIN
+	MUX0 : MUX4to1 PORT MAP ( X(0)=>qsig(0), X(1)=>D(0), X(2)=>qsig(1), X(3)=>qsig(1), C(0)=>sh, C(1)=>l, MOUT=>msig(0) );
+	MUX1 : MUX4to1 PORT MAP ( X(0)=>qsig(1), X(1)=>D(1), X(2)=>qsig(2), X(3)=>qsig(2), C(0)=>sh, C(1)=>l, MOUT=>msig(1) );
+	MUX2 : MUX4to1 PORT MAP ( X(0)=>qsig(2), X(1)=>D(2), X(2)=>qsig(3), X(3)=>qsig(3), C(0)=>sh, C(1)=>l, MOUT=>msig(2) );
+	MUX3 : MUX4to1 PORT MAP ( X(0)=>qsig(3), X(1)=>D(3), X(2)=>qsig(4), X(3)=>qsig(4), C(0)=>sh, C(1)=>l, MOUT=>msig(3) );
+	MUX4 : MUX4to1 PORT MAP ( X(0)=>qsig(4), X(1)=>D(4), X(2)=>qsig(5), X(3)=>qsig(5), C(0)=>sh, C(1)=>l, MOUT=>msig(4) );
+	MUX5 : MUX4to1 PORT MAP ( X(0)=>qsig(5), X(1)=>D(5), X(2)=>qsig(6), X(3)=>qsig(6), C(0)=>sh, C(1)=>l, MOUT=>msig(5) );
+	MUX6 : MUX4to1 PORT MAP ( X(0)=>qsig(6), X(1)=>D(6), X(2)=>qsig(7), X(3)=>qsig(7), C(0)=>sh, C(1)=>l, MOUT=>msig(6) );
+	MUX7 : MUX4to1 PORT MAP ( X(0)=>qsig(7), X(1)=>D(7), X(2)=>qsig(8), X(3)=>qsig(8), C(0)=>sh, C(1)=>l, MOUT=>msig(7) );
+	MUX8 : MUX4to1 PORT MAP ( X(0)=>qsig(8), X(1)=>D(8), X(2)=>qsig(9), X(3)=>qsig(9), C(0)=>sh, C(1)=>l, MOUT=>msig(8) );
+	MUX9 : MUX4to1 PORT MAP ( X(0)=>qsig(9), X(1)=>D(9), X(2)=>qsig(10), X(3)=>qsig(10), C(0)=>sh, C(1)=>l, MOUT=>msig(9) );
+	MUX10 : MUX4to1 PORT MAP ( X(0)=>qsig(10), X(1)=>D(10), X(2)=>qsig(11), X(3)=>qsig(11), C(0)=>sh, C(1)=>l, MOUT=>msig(10) );
+	MUX11 : MUX4to1 PORT MAP ( X(0)=>qsig(11), X(1)=>D(11), X(2)=>qsig(12), X(3)=>qsig(12), C(0)=>sh, C(1)=>l, MOUT=>msig(11) );
+	MUX12 : MUX4to1 PORT MAP ( X(0)=>qsig(12), X(1)=>D(12), X(2)=>qsig(13), X(3)=>qsig(13), C(0)=>sh, C(1)=>l, MOUT=>msig(12) );
+	MUX13 : MUX4to1 PORT MAP ( X(0)=>qsig(13), X(1)=>D(13), X(2)=>qsig(14), X(3)=>qsig(14), C(0)=>sh, C(1)=>l, MOUT=>msig(13) );
+	MUX14 : MUX4to1 PORT MAP ( X(0)=>qsig(14), X(1)=>D(14), X(2)=>qsig(15), X(3)=>qsig(15), C(0)=>sh, C(1)=>l, MOUT=>msig(14) );
+	MUX15 : MUX4to1 PORT MAP ( X(0)=>qsig(15), X(1)=>D(15), X(2)=>si, X(3)=>si, C(0)=>sh, C(1)=>l, MOUT=>msig(15) );
+	
+	REG0 : DFlipFlop PORT MAP ( d=>msig(0), Clk=>not(clock), Clr=>ClrN, q2=>qsig(0) );
+	REG1 : DFlipFlop PORT MAP ( d=>msig(1), Clk=>not(clock), Clr=>ClrN, q2=>qsig(1) );
+	REG2 : DFlipFlop PORT MAP ( d=>msig(2), Clk=>not(clock), Clr=>ClrN, q2=>qsig(2) );
+	REG3 : DFlipFlop PORT MAP ( d=>msig(3), Clk=>not(clock), Clr=>ClrN, q2=>qsig(3) );
+	REG4 : DFlipFlop PORT MAP ( d=>msig(4), Clk=>not(clock), Clr=>ClrN, q2=>qsig(4) );
+	REG5 : DFlipFlop PORT MAP ( d=>msig(5), Clk=>not(clock), Clr=>ClrN, q2=>qsig(5) );
+	REG6 : DFlipFlop PORT MAP ( d=>msig(6), Clk=>not(clock), Clr=>ClrN, q2=>qsig(6) );
+	REG7 : DFlipFlop PORT MAP ( d=>msig(7), Clk=>not(clock), Clr=>ClrN, q2=>qsig(7) );
+	REG8 : DFlipFlop PORT MAP ( d=>msig(8), Clk=>not(clock), Clr=>ClrN, q2=>qsig(8) );
+	REG9 : DFlipFlop PORT MAP ( d=>msig(9), Clk=>not(clock), Clr=>ClrN, q2=>qsig(9) );
+	REG10 : DFlipFlop PORT MAP ( d=>msig(10), Clk=>not(clock), Clr=>ClrN, q2=>qsig(10) );
+	REG11 : DFlipFlop PORT MAP ( d=>msig(11), Clk=>not(clock), Clr=>ClrN, q2=>qsig(11) );
+	REG12 : DFlipFlop PORT MAP ( d=>msig(12), Clk=>not(clock), Clr=>ClrN, q2=>qsig(12) );
+	REG13 : DFlipFlop PORT MAP ( d=>msig(13), Clk=>not(clock), Clr=>ClrN, q2=>qsig(13) );
+	REG14 : DFlipFlop PORT MAP ( d=>msig(14), Clk=>not(clock), Clr=>ClrN, q2=>qsig(14) );
+	REG15 : DFlipFlop PORT MAP ( d=>msig(15), Clk=>not(clock), Clr=>ClrN, q2=>qsig(15) );
+	
+	Q <= qsig;
+END
+ARCHITECTURE;

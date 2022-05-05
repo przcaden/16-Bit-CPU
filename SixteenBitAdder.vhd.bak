@@ -1,0 +1,37 @@
+
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+USE ieee.numeric_std.all;
+
+ENTITY FourBitAdder IS
+	PORT(
+		A : IN std_logic_vector (3 downto 0);
+		B : IN std_logic_vector (3 downto 0);
+		CARRYIN : IN std_logic;
+		CARRYOUT : OUT std_logic;
+		SUM : OUT std_logic_vector (3 downto 0)
+		);
+END ENTITY;
+
+ARCHITECTURE behave OF FourBitAdder IS
+
+COMPONENT FullAdder IS
+	PORT (
+		X : IN std_logic;
+		Y : IN std_logic;
+		CIN : IN std_logic;
+		SUM0 : OUT std_logic;
+		COUT : OUT std_logic
+		);
+END COMPONENT;
+
+SIGNAL COUT0, COUT1, COUT2, COUT3 : std_logic;
+
+BEGIN
+	Adder0: FullAdder PORT MAP (X => A(0), Y => B(0), CIN => CARRYIN, SUM0 => SUM(0), COUT => COUT0);
+	Adder1: FullAdder PORT MAP (X => A(1), Y => B(1), CIN => CARRYIN, SUM0 => SUM(1), COUT => COUT1);
+	Adder2: FullAdder PORT MAP (X => A(2), Y => B(2), CIN => CARRYIN, SUM0 => SUM(2), COUT => COUT2);
+	Adder3: FullAdder PORT MAP (X => A(3), Y => B(3), CIN => CARRYIN, SUM0 => SUM(3), COUT => COUT3);
+END
+ARCHITECTURE;

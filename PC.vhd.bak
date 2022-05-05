@@ -1,0 +1,42 @@
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+USE ieee.numeric_std.all;
+
+ENTITY PC IS
+	PORT(
+		clk : in std_logic;
+		addr : in std_logic_vector (15 downto 0);
+		aout : out std_logic_vector (15 downto 0);
+		);
+END ENTITY;
+
+ARCHITECTURE Behavior OF PC IS
+
+COMPONENT Reg IS
+	PORT(
+		clock: IN std_logic;
+		ClrN : IN std_logic;
+		D : IN std_logic_vector (15 downto 0);
+		Q : OUT std_logic_vector (15 downto 0)
+	);
+END COMPONENT;
+
+signal reg_out : std_logic_vector (15 downto 0);
+signal op : std_logic_vector (3 downto 0);
+signal rd, rt, rs, shift : std_logic_vector (2 downto 0);
+signal addr : std_logic_vector (11 downto 0);
+signal imm : std_logic_vector (5 downto 0);
+
+BEGIN
+	r : Reg PORT MAP ( clock=>clk, clrN=>'1', D=>instr, Q=>reg_out );
+	
+	process(reg_out, op, addr, rs, rt, rd, shift, imm) is
+	begin
+		if falling_edge(clk) then
+			aout <= addr;
+		end if;
+	end process;
+	
+END
+ARCHITECTURE;

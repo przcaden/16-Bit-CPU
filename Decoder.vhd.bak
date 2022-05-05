@@ -1,0 +1,25 @@
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+USE ieee.numeric_std.all;
+
+ENTITY Decoder IS
+	PORT(
+		opcode : in std_logic_vector (15 downto 0);
+		alu_zf, alu_of, alu_cf, alu_sf, alu_pf : in std_logic;
+		
+		ir_immediate : out std_logic_vector (5 downto 0);
+		ir_address : out std_logic_vector (11 downto 0);
+		ir_shift : out std_logic_vector (2 downto 0);
+		ir_rd : out std_logic_vector (2 downto 0);
+		ir_rt : out std_logic_vector (2 downto 0);
+		ir_rs : out std_logic_vector (2 downto 0);
+		ir_opcode : out std_logic_vector (3 downto 0);
+		);
+END MUX4to1;
+
+ARCHITECTURE Behavior OF MUX4to1 IS
+BEGIN
+	op <= instr(15 downto 12);
+END
+ARCHITECTURE;

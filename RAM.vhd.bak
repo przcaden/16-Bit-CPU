@@ -1,0 +1,20 @@
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+USE ieee.numeric_std.all;
+
+ENTITY RAM IS
+	PORT (
+		X : IN std_logic;
+		Y : IN std_logic;
+		CIN : IN std_logic;
+		SUM0 : OUT std_logic;
+		COUT : OUT std_logic
+		);
+END ENTITY;
+
+ARCHITECTURE Behavior OF FullAdder IS
+BEGIN
+	
+END
+ARCHITECTURE;
